@@ -4,47 +4,12 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class RateManager {
-    class RateWrapper{
-        private Rate rate;
-        private Rate next;
-        private Rate parent;
-
-        public RateWrapper(Rate rate){
-            this.rate = rate;
-        }
-
-        public void addNext(Rate rate){
-            this.next = rate;
-        }
-
-        public boolean hasNext(){
-            return this.next == null;
-        }
-
-        public Rate getNext() {
-            return next;
-        }
-
-        public Rate getRate(){
-            return rate;
-        }
-
-        public Rate getParent(){
-            return parent;
-        }
-
-        public void setPatent(Rate rate){
-            this.parent = rate;
-        }
-    }
-
-
     private RateWrapper head;
 
-    private Map<Rate, RateWrapper> rateRateWrapperMap = new HashMap<>();
+    private Map<RatedPeriod, RateWrapper> rateRateWrapperMap = new HashMap<>();
 
-    private NavigableSet<Rate> rates = new TreeSet<>();
-    private Rate DEFAULT_RATE = new Rate(0, 0, 23, 59, RateType.EVENT, new BigDecimal(10));
+    private NavigableSet<RatedPeriod> rates = new TreeSet<>();
+    private RatedPeriod DEFAULT_RATE = new RatedPeriod(0, 0, 23, 59, RateType.EVENT, new BigDecimal(10));
 
     public RateManager(){
         rates.add(DEFAULT_RATE);
@@ -53,8 +18,8 @@ public class RateManager {
         head = new RateWrapper(DEFAULT_RATE);
     }
 
-    public void addRate(Rate rate){
-        Rate rateBefore = rates.lower(rate);
+    public void addRate(RatedPeriod rate){
+        RatedPeriod rateBefore = rates.lower(rate);
         RateWrapper rateWrapper = rateRateWrapperMap.get(rateBefore);
         if (rateWrapper.hasNext()){
             // A - C
@@ -62,20 +27,23 @@ public class RateManager {
         } else {
             if (rate.isInside(rateWrapper.getRate())){
                 // A1 - B - A2
-                Rate aRate = rateWrapper.getRate();
-                Rate bRate = rate;
+                RatedPeriod aRate = rateWrapper.getRate();
+                RatedPeriod bRate = rate;
 
 
                 //aRate.getFrom(), bRate.getFrom(), bRate.getTo(), aRate.getTo()
-                Rate a1Rate = new Rate();
+                RatedPeriod a1Rate = new RatedPeriod();
                 a1Rate.setFrom(aRate.getFrom());
                 a1Rate.setTo(rate.getFrom());
-                RateWrapper a1RateWrapper = new RateWrapper(a1Rate);
+                RateWrapper a1RateWrapper = RateWrapper.black().withPeriodFrom(aRate.getFrom()).
+                                                withPeriodTo(rate.getTo()).
+                                                withRateType(a1Rate.getRateType()).
+                                                withRate(a1Rate.getRate());
 
 
 
-                Rate bRate = rate;
-                Rate a2Rate= new Rate();
+
+                RatedPeriod a2Rate= new RatedPeriod();
 
             }
             if (rate.startsBefore(rateWrapper.getRate())){
@@ -90,8 +58,8 @@ public class RateManager {
         }
    }
 
-    public Collection<Rate> getRates(Period period) {
-        Set<Rate> rates = new HashSet<>();
+    public Collection<RatedPeriod> getRates(Period period) {
+        Set<RatedPeriod> rates = new HashSet<>();
         RateWrapper wrapper = getLeftMostWrapper(period);
         while (wrapper.hasNext()) {
             rates.add(wrapper.getNext());
@@ -105,8 +73,8 @@ public class RateManager {
     }
 
     public static void main(String[] args) {
-        NavigableSet<Rate> rates = new TreeSet<>();
-        Rate defaultRate = new Rate(0, 0, 23, 59, RateType.EVENT, new BigDecimal(10));
+        NavigableSet<RatedPeriod> rates = new TreeSet<>();
+        RatedPeriod defaultRate = new RatedPeriod(0, 0, 23, 59, RateType.EVENT, new BigDecimal(10));
         rates.add(defaultRate);
 
 
