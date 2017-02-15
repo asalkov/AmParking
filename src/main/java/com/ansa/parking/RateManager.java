@@ -22,7 +22,7 @@ public class RateManager {
         RatedPeriod rateBefore = rates.lower(rate);
         RateWrapper rateWrapper = rateRateWrapperMap.get(rateBefore);
         if (rateWrapper.hasNext()){
-            // A - C
+            // A - C => A - B - C/A - B/A[B]-B-C/A[B]-B
 
         } else {
             if (rate.isInside(rateWrapper.getRate())){
@@ -32,18 +32,20 @@ public class RateManager {
 
 
                 //aRate.getFrom(), bRate.getFrom(), bRate.getTo(), aRate.getTo()
-                RatedPeriod a1Rate = new RatedPeriod();
-                a1Rate.setFrom(aRate.getFrom());
-                a1Rate.setTo(rate.getFrom());
                 RateWrapper a1RateWrapper = RateWrapper.black().withPeriodFrom(aRate.getFrom()).
                                                 withPeriodTo(rate.getTo()).
-                                                withRateType(a1Rate.getRateType()).
-                                                withRate(a1Rate.getRate());
+                                                withRateType(aRate.getRateType()).
+                                                withRate(aRate.getRate());
+                RateWrapper bRateWrapper = new RateWrapper();
+
+
+                RateWrapper a2RateWrapper = new RateWrapper();
+
+                a1RateWrapper.setNext(bRateWrapper);
+                bRateWrapper.setNext(a2RateWrapper);
 
 
 
-
-                RatedPeriod a2Rate= new RatedPeriod();
 
             }
             if (rate.startsBefore(rateWrapper.getRate())){
@@ -56,16 +58,32 @@ public class RateManager {
             }
 
         }
+
+        rearrangePeriods();
    }
+
+    private void rearrangePeriods() {
+        rates.clear();
+        RateWrapper wrapper = head;
+        while (wrapper.hasNext()){
+            rates.add(wrapper.getRate());
+        }
+    }
 
     public Collection<RatedPeriod> getRates(Period period) {
         Set<RatedPeriod> rates = new HashSet<>();
         RateWrapper wrapper = getLeftMostWrapper(period);
-        while (wrapper.hasNext()) {
-            rates.add(wrapper.getNext());
+        RateWrapper last = getRightMostWrapper(period);
+        while (wrapper!=last) {
+            rates.add(wrapper.getRate());
+            wrapper = wrapper.getNext();
         }
 
         return rates;
+    }
+
+    private RateWrapper getRightMostWrapper(Period period) {
+        return null;
     }
 
     private RateWrapper getLeftMostWrapper(Period period) {

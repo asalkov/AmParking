@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 public class RateWrapper {
     private RatedPeriod rate;
-    private RatedPeriod next;
-    private RatedPeriod parent;
+    private RateWrapper next;
+    private RateWrapper parent;
 
     public RateWrapper(){
         this.rate = new RatedPeriod();
@@ -14,7 +14,7 @@ public class RateWrapper {
         this.rate = rate;
     }
 
-    public void addNext(RatedPeriod rate){
+    public void setNext(RateWrapper rate){
         this.next = rate;
     }
 
@@ -22,7 +22,7 @@ public class RateWrapper {
         return this.next == null;
     }
 
-    public RatedPeriod getNext() {
+    public RateWrapper getNext() {
         return next;
     }
 
@@ -30,11 +30,11 @@ public class RateWrapper {
         return rate;
     }
 
-    public RatedPeriod getParent(){
+    public RateWrapper getParent(){
         return parent;
     }
 
-    public void setPatent(RatedPeriod rate){
+    public void setParent(RateWrapper rate){
         this.parent = rate;
     }
 
