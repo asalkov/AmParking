@@ -26,41 +26,50 @@ public class RateManager {
 
         } else {
             if (rate.isInside(rateWrapper.getRate())){
-                // A1 - B - A2
-                RatedPeriod aRate = rateWrapper.getRate();
-                RatedPeriod bRate = rate;
-
-
-                //aRate.getFrom(), bRate.getFrom(), bRate.getTo(), aRate.getTo()
-                RateWrapper a1RateWrapper = RateWrapper.black().withPeriodFrom(aRate.getFrom()).
-                                                withPeriodTo(rate.getTo()).
-                                                withRateType(aRate.getRateType()).
-                                                withRate(aRate.getRate());
-                RateWrapper bRateWrapper = new RateWrapper();
-
-
-                RateWrapper a2RateWrapper = new RateWrapper();
-
-                a1RateWrapper.setNext(bRateWrapper);
-                bRateWrapper.setNext(a2RateWrapper);
-
-
-
-
+                processInsiderCase(rate, rateWrapper);
             }
             if (rate.startsBefore(rateWrapper.getRate())){
-                // B - A
+                processStartBeforeCase(rate, rateWrapper);
             }
 
             if (rate.startsInside(rateWrapper.getRate())){
-                // AB
-
+                processStartInsideCase(rate, rateWrapper);
             }
 
         }
 
         rearrangePeriods();
    }
+
+    private void processStartInsideCase(RatedPeriod rate, RateWrapper rateWrapper) {
+
+    }
+
+    private void processStartBeforeCase(RatedPeriod rate, RateWrapper rateWrapper) {
+
+    }
+
+    private void processInsiderCase(RatedPeriod rate, RateWrapper rateWrapper) {
+        RatedPeriod outerRate = rateWrapper.getRate();
+        RateWrapper leffWrapper = RateWrapper.black().withPeriodFrom(outerRate.getFrom()).
+                                        withPeriodTo(rate.getFrom()).
+                                        withRateType(outerRate.getRateType()).
+                                        withRate(outerRate.getRate());
+        RateWrapper insideWrapper = new RateWrapper(rate);
+
+        RateWrapper rightWrapper = RateWrapper.black().withPeriodFrom(rate.getTo()).
+                withPeriodTo(outerRate.getTo()).
+                withRateType(outerRate.getRateType()).
+                withRate(outerRate.getRate());
+
+        leffWrapper.setNext(insideWrapper);
+
+        insideWrapper.setNext(rightWrapper);
+        insideWrapper.setParent(leffWrapper);
+        rightWrapper.setParent(insideWrapper);
+        if (rateWrapper.getParent() == null)
+            head = leffWrapper;
+    }
 
     private void rearrangePeriods() {
         rates.clear();

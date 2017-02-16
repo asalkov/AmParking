@@ -30,11 +30,21 @@ public class Period implements Comparable<Period>{
     }
 
     public boolean startsBefore(Period p){
-        return this.compareTo(p)<0;
+        return this.getFrom().isBefore(p.getFrom());
     }
 
     public boolean endAfter(Period p){
-        return this.compareTo(p)>0;
+        return this.getTo().isAfter(p.getTo());
+    }
+
+    public boolean endAfterOrSame(Period p) {
+        if (this.getTo().isAfter(p.getTo()))
+            return true;
+
+        if (this.getTo().equals(p.getTo()))
+            return true;
+
+        return false;
     }
 
     @Override
@@ -43,5 +53,12 @@ public class Period implements Comparable<Period>{
         if (cmt==0)
             return from.compareTo(o.getTo());
         return cmt;
+    }
+    public boolean isInside(Period aRate){
+        return aRate.startsBefore(this)&&this.endAfterOrSame(aRate);
+    }
+
+    public boolean startsInside(Period rate) {
+        return this.getFrom().isAfter(rate.getFrom());
     }
 }

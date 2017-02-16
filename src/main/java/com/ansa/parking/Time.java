@@ -1,5 +1,7 @@
 package com.ansa.parking;
 
+import java.util.Objects;
+
 public class Time implements Comparable<Time>{
     private Integer h;
     private Integer m;
@@ -10,11 +12,17 @@ public class Time implements Comparable<Time>{
     }
 
     public boolean isBefore(Time time){
-        return this.compareTo(time)<1;
+        if (this.getH() == time.getH()){
+            return this.getM() < time.getM();
+        }
+        return this.getH() < time.getH();
     }
 
     public boolean isAfter(Time time){
-        return this.compareTo(time)>1;
+        if (this.getH() == time.getH()){
+            return this.getM() > time.getM();
+        }
+        return this.getH() > time.getH();
     }
 
 
@@ -40,5 +48,20 @@ public class Time implements Comparable<Time>{
 
     public void setM(int m) {
         this.m = m;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Time time = (Time) o;
+        return Objects.equals(h, time.h) &&
+                Objects.equals(m, time.m);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(h, m);
     }
 }

@@ -30,11 +30,5 @@ public class RatedPeriod extends Period{
         this.rateType = rateType;
     }
 
-    public boolean isInside(RatedPeriod aRate){
-        return startsBefore(aRate)&&endAfter(aRate);
-    }
 
-    public boolean startsInside(RatedPeriod rate) {
-        return this.getFrom().isAfter(rate.getFrom());
-    }
 }
