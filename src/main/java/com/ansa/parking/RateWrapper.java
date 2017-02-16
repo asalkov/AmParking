@@ -19,7 +19,7 @@ public class RateWrapper {
     }
 
     public boolean hasNext(){
-        return this.next == null;
+        return this.next != null;
     }
 
     public RateWrapper getNext() {

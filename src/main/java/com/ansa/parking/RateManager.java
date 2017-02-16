@@ -18,6 +18,10 @@ public class RateManager {
         head = new RateWrapper(DEFAULT_RATE);
     }
 
+    public RateWrapper head(){
+        return head;
+    }
+
     public void addRate(RatedPeriod rate){
         RatedPeriod rateBefore = rates.lower(rate);
         RateWrapper rateWrapper = rateRateWrapperMap.get(rateBefore);
@@ -42,10 +46,12 @@ public class RateManager {
    }
 
     private void processStartInsideCase(RatedPeriod rate, RateWrapper rateWrapper) {
+        // rate make right overlap of base
 
     }
 
     private void processStartBeforeCase(RatedPeriod rate, RateWrapper rateWrapper) {
+        // rate make left overlap of base
 
     }
 
@@ -63,7 +69,6 @@ public class RateManager {
                 withRate(outerRate.getRate());
 
         leffWrapper.setNext(insideWrapper);
-
         insideWrapper.setNext(rightWrapper);
         insideWrapper.setParent(leffWrapper);
         rightWrapper.setParent(insideWrapper);
@@ -76,6 +81,7 @@ public class RateManager {
         RateWrapper wrapper = head;
         while (wrapper.hasNext()){
             rates.add(wrapper.getRate());
+            wrapper = wrapper.getNext();
         }
     }
 
@@ -92,11 +98,13 @@ public class RateManager {
     }
 
     private RateWrapper getRightMostWrapper(Period period) {
-        return null;
+        RatedPeriod ratedPeriod = rates.higher(new RatedPeriod(period));
+        return rateRateWrapperMap.get(ratedPeriod);
     }
 
     private RateWrapper getLeftMostWrapper(Period period) {
-        return null;
+        RatedPeriod ratedPeriod = rates.lower(new RatedPeriod(period));
+        return rateRateWrapperMap.get(ratedPeriod);
     }
 
     public static void main(String[] args) {

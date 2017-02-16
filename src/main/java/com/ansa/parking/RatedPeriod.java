@@ -14,6 +14,11 @@ public class RatedPeriod extends Period{
 
     }
 
+    public RatedPeriod(Period period) {
+        this.setFrom(period.getFrom());
+        this.setTo(period.getTo());
+    }
+
     public BigDecimal getRate() {
         return rate;
     }
